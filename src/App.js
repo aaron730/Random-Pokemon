@@ -1,15 +1,15 @@
-import logo from './logo.svg';
-import './App.css';
-import ex from './exPokemon';
+import "./App.css";
+import ex from "./exPokemon";
 
-import React, { useState, useEffect, useCallback } from 'react';
-import PokemonDisplay from './pokemonDisplay';
-import { Button, Form } from 'react-bootstrap';
+import React, { useState, useEffect, useCallback } from "react";
+import PokemonDisplay from "./pokemonDisplay";
+import { Button, Form, FormCheck } from "react-bootstrap";
+import Konami, { useKonami } from "react-konami-code";
 
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
-  const Pokedex = require('pokeapi-js-wrapper');
+  const Pokedex = require("pokeapi-js-wrapper");
   const P = new Pokedex.Pokedex();
   const [pokemon, setPokemon] = useState(ex);
   const [pokemon1, setPokemon1] = useState(ex);
@@ -19,6 +19,7 @@ function App() {
   const [pokemon5, setPokemon5] = useState(ex);
   const [isLoading, setIsLoading] = useState(false);
   const [maxID, setmaxID] = useState(898);
+  const [includeLegendaries, setIncludeLegendaries] = useState(true);
   const [pokemonRevealed, setpokemonRevealed] = useState(false);
   const [pokemon1Revealed, setpokemon1Revealed] = useState(false);
   const [pokemon2Revealed, setpokemon2Revealed] = useState(false);
@@ -26,20 +27,125 @@ function App() {
   const [pokemon4Revealed, setpokemon4Revealed] = useState(false);
   const [pokemon5Revealed, setpokemon5Revealed] = useState(false);
 
-  const [audio, setaudio] = useState(
-    new Audio('../lib/Sound Effects - Pokémon Anime (#7) Pokémon Out.mp3')
-  );
   function getisShiny(min, max) {
     return Math.random() * (max - min) + min;
   }
 
   const randomUnique = (range, count) => {
     let nums = new Set();
+    let legends = [
+      144,
+      145,
+      146,
+      150,
+      151,
+      243,
+      244,
+      245,
+      249,
+      250,
+      251,
+      377,
+      378,
+      379,
+      380,
+      381,
+      382,
+      383,
+      384,
+      385,
+      386,
+      480,
+      481,
+      482,
+      483,
+      484,
+      485,
+      486,
+      487,
+      488,
+      489,
+      490,
+      491,
+      492,
+      493,
+      494,
+      638,
+      639,
+      640,
+      641,
+      642,
+      643,
+      645,
+      646,
+      647,
+      648,
+      649,
+      716,
+      717,
+      718,
+      785,
+      786,
+      787,
+      788,
+      789,
+      790,
+      791,
+      792,
+      800,
+      888,
+      889,
+      890,
+      891,
+      892,
+      894,
+      895,
+      896,
+      897,
+      898,
+    ];
     while (nums.size < count) {
-      nums.add(Math.floor(Math.random() * (range - 1 + 1) + 1));
+      let rand = Math.floor(Math.random() * (range - 1 + 1) + 1);
+      if (!includeLegendaries) {
+        if (!legends.includes(rand)) {
+          nums.add(rand);
+        }
+      } else {
+        nums.add(rand);
+      }
     }
     return [...nums];
   };
+
+  const forBry = useCallback(async () => {
+    console.log("hi bry");
+    if (isLoading) return;
+    setIsLoading(true);
+    const response = await P.getPokemonByName(191);
+    setpokemonRevealed(false);
+    setPokemon(response);
+    setIsLoading(true);
+    const response1 = await P.getPokemonByName(191);
+    setpokemon1Revealed(false);
+    setPokemon1(response1);
+    setIsLoading(true);
+    const response2 = await P.getPokemonByName(191);
+    setpokemon2Revealed(false);
+    setPokemon2(response2);
+    setIsLoading(true);
+    const response3 = await P.getPokemonByName(191);
+    setpokemon3Revealed(false);
+    setPokemon3(response3);
+    setIsLoading(true);
+    const response4 = await P.getPokemonByName(191);
+    setpokemon4Revealed(false);
+    setPokemon4(response4);
+    setIsLoading(true);
+    const response5 = await P.getPokemonByName(191);
+    setpokemon5Revealed(false);
+    setPokemon5(response5);
+    setIsLoading(false);
+  }, [maxID]);
 
   const generateTeamhandler = useCallback(async () => {
     const randomIds = randomUnique(maxID, 6);
@@ -74,14 +180,16 @@ function App() {
 
   let generatedTeam = <p>Error</p>;
 
+  useKonami(forBry);
+
   if (pokemon !== {}) {
     generatedTeam = (
       <div
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          margin: 'auto',
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          margin: "auto",
         }}
       >
         <PokemonDisplay
@@ -125,17 +233,17 @@ function App() {
   }
 
   return (
-    <div className='App'>
+    <div className="App">
       <div
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          paddingBottom: '2em',
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          paddingBottom: "2em",
         }}
       >
         <Button
-          variant='danger'
+          variant="danger"
           onClick={() => {
             generateTeamhandler();
           }}
@@ -143,23 +251,31 @@ function App() {
         >
           Generate Team
         </Button>
-
         <Form.Select
-          style={{ width: '250px' }}
+          style={{ width: "250px" }}
           value={maxID}
           onChange={(event) => {
             setmaxID(parseInt(event.target.value));
           }}
         >
-          <option value={898} label={'All'}></option>
-          <option value={151} label={'Pokemon through Gen 1'}></option>
-          <option value={251} label={'Pokemon through Gen 2'}></option>
-          <option value={386} label={'Pokemon through Gen 3'}></option>
-          <option value={493} label={'Pokemon through Gen 4'}></option>
-          <option value={649} label={'Pokemon through Gen 5'}></option>
-          <option value={721} label={'Pokemon through Gen 6'}></option>
-          <option value={809} label={'Pokemon through Gen 7'}></option>
+          <option value={898} label={"All"}></option>
+          <option value={151} label={"Pokemon through Gen 1"}></option>
+          <option value={251} label={"Pokemon through Gen 2"}></option>
+          <option value={386} label={"Pokemon through Gen 3"}></option>
+          <option value={493} label={"Pokemon through Gen 4"}></option>
+          <option value={649} label={"Pokemon through Gen 5"}></option>
+          <option value={721} label={"Pokemon through Gen 6"}></option>
+          <option value={809} label={"Pokemon through Gen 7"}></option>
         </Form.Select>
+        <Form.Check
+          style={{ paddingLeft: "50px" }}
+          label={"Include Legendaries?"}
+          value={includeLegendaries}
+          defaultChecked={true}
+          onChange={() => {
+            setIncludeLegendaries(!includeLegendaries);
+          }}
+        />
       </div>
       {generatedTeam}
     </div>
