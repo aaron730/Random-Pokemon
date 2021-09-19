@@ -28,6 +28,10 @@ function App() {
   const [pokemon4Revealed, setpokemon4Revealed] = useState(false);
   const [pokemon5Revealed, setpokemon5Revealed] = useState(false);
 
+  useEffect(() => {
+    generateTeamhandler();
+  }, []);
+
   function getisShiny(min, max) {
     return Math.random() * (max - min) + min;
   }
@@ -123,7 +127,7 @@ function App() {
     setPokemon5(response5);
 
     setIsLoading(false);
-  }, [maxID, includeLegendaries]);
+  }, [maxID, includeLegendaries, includeBeasts]);
 
   let generatedTeam = <p>Error</p>;
 
@@ -131,14 +135,7 @@ function App() {
 
   if (pokemon !== {}) {
     generatedTeam = (
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          margin: 'auto',
-        }}
-      >
+      <div className={'pokemon-display'}>
         <PokemonDisplay
           pokemon={pokemon}
           pokemonRevealed={pokemonRevealed}
@@ -181,14 +178,7 @@ function App() {
 
   return (
     <div className='App'>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          paddingBottom: '2em',
-        }}
-      >
+      <div className={'controls'}>
         <Button
           variant='danger'
           onClick={() => {
@@ -226,7 +216,7 @@ function App() {
         <Form.Check
           style={{ paddingLeft: '50px' }}
           label={'Remove Ultrabeasts?'}
-          value={includeLegendaries}
+          value={includeBeasts}
           defaultChecked={false}
           onChange={(event) => {
             setIncludeBeasts(event.target.checked);
