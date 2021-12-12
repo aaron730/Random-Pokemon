@@ -206,7 +206,7 @@ function App() {
         </Form.Select>
         <Form.Check
           style={{ paddingLeft: '50px' }}
-          label={'Remove legendaries?'}
+          label={'Remove Legendaries?'}
           value={includeLegendaries}
           defaultChecked={false}
           onChange={(event) => {
